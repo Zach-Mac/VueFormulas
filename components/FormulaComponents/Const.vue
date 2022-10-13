@@ -7,5 +7,5 @@ const props = defineProps({
 })
 </script>
 <template>
-	<FormulaText>{{ name }}</FormulaText>
+	<Var :name="name" readonly />
 </template>

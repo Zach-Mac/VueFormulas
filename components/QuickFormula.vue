@@ -16,8 +16,8 @@ async function solve() {
 		<ion-input v-model="equation" type="text" placeholder="Enter formula" />
 		<div class="d-flex flex-row">
 			<ion-button class="me-3" variant="primary" @click="solve">
-				>Solve</ion-button
-			>
+				Solve
+			</ion-button>
 			<h1>x = {{ solution }}</h1>
 			{{ response }}
 		</div>

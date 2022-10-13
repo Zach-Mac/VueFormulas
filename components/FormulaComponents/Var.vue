@@ -14,6 +14,10 @@ const props = defineProps({
 	},
 	value: {
 		type: String
+	},
+	readonly: {
+		type: Boolean,
+		default: false
 	}
 })
 
@@ -60,8 +64,6 @@ const value = computed({
 			nan.value = false
 		}
 
-		// result = Math.round((result + Number.EPSILON) * 10000000) / 10000000
-
 		vmodels[props.name] = result
 	}
 })
@@ -69,7 +71,9 @@ const value = computed({
 
 <template>
 	<ion-item fill="outline">
-		<ion-label position="floating">{{ placeholder }}</ion-label>
+		<ion-label v-if="!readonly" position="floating">{{
+			placeholder
+		}}</ion-label>
 		<ion-input
 			@keydown.enter="onCalculate()"
 			type="text"
@@ -79,14 +83,8 @@ const value = computed({
 			v-model="value"
 			step="any"
 			:placeholder="placeholder"
+			:readonly="readonly"
 		/>
 	</ion-item>
-	<!-- <ion-input
-		v-else
-		rows="1"
-		max-rows="1"
-		step="any"
-		:placeholder="placeholder"
-	/> -->
 	{{ nan ? value : '' }}
 </template>

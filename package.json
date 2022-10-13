@@ -7,12 +7,12 @@
 		"preview": "nuxt preview"
 	},
 	"devDependencies": {
-		"nuxt": "3.0.0-rc.6",
-		"nuxt-ionic": "^0.3.0"
+		"nuxt": "rc",
+		"nuxt-ionic": "^0.7.0"
 	},
 	"dependencies": {
-		"@ionic/core": "^6.2.1",
-		"@ionic/vue": "^6.2.1",
+		"@ionic/core": "^6.3.1",
+		"@ionic/vue": "^6.3.1",
 		"@popperjs/core": "^2.11.5"
 	}
 }

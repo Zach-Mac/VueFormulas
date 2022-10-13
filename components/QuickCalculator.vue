@@ -23,7 +23,7 @@ function solve() {}
 			</ion-col>
 		</ion-row>
 		<ion-button class="me-3" variant="primary" @click="solve">
-			>Solve</ion-button
-		>
+			Solve
+		</ion-button>
 	</ion-card>
 </template>

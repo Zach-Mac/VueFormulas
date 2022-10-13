@@ -6,8 +6,6 @@ const solution = ref(null)
 
 const { addFormulaToHistory } = useHistory()
 
-const alert = ref('')
-
 const props = defineProps({
 	name: {
 		type: String,
@@ -21,9 +19,9 @@ const props = defineProps({
 		type: Array,
 		required: false
 	},
-	varsNeedSet: {
+	varsNeeded: {
 		type: Number,
-		default: 1
+		required: false
 	}
 })
 const alphabet = 'abcdefghijklmnopqrstuvwxyz'
@@ -43,11 +41,23 @@ if (props.vars && props.vars.length > 0) {
 	}
 }
 
+const varsNeeded = computed(() =>
+	props.varsNeeded ? props.varsNeeded : numVars.value - 1
+)
+
+const alert = ref('')
+
+const loading = ref(false)
 async function onCalculate() {
-	// formula calculator
+	loading.value = true
 	const varsNotSetKeys = Object.keys(vmodels).filter(v => vmodels[v] == '')
-	console.log('varsNotSetKeys:', vmodels)
-	if (varsNotSetKeys.length == numVars.value - props.varsNeedSet) {
+	console.log(
+		'varsNotSetKeys:',
+		varsNotSetKeys.length,
+		numVars.value,
+		varsNeeded.value
+	)
+	if (varsNotSetKeys.length == numVars.value - varsNeeded.value) {
 		alert.value = ''
 		const varNotSetKey = varsNotSetKeys[0]
 
@@ -80,13 +90,14 @@ async function onCalculate() {
 			props.logFormula ? props.logFormula : props.formula,
 			vmodelsObject
 		)
-	} else if (varsNotSetKeys.length > numVars.value - props.varsNeedSet) {
-		alert.value = 'Vars not set > 1'
-		console.log('vars not set > 1:', varsNotSetKeys)
+	} else if (varsNotSetKeys.length > numVars.value - varsNeeded.value) {
+		alert.value = 'Vars not set > vars needed'
+		console.log('vars not set > vars needed:', varsNotSetKeys)
 	} else {
 		alert.value = 'All vars already set'
 		console.log('all vars set', varsNotSetKeys)
 	}
+	loading.value = false
 }
 
 provide('vmodels', vmodels)
@@ -118,12 +129,17 @@ if (slots.default) {
 							<ion-button variant="primary" @click="onCalculate">
 								Calculate
 							</ion-button>
+							<ion-spinner v-if="loading"></ion-spinner>
 							<h1 v-if="response">
 								Full response: {{ response }}
 							</h1>
-							<!-- <b-alert class="m-0 ms-auto" :show="alert !== ''" variant="danger">
-                            {{ alert }}
-			</b-alert> -->
+							<ion-toast
+								:isOpen="alert != ''"
+								@didDismiss="() => (alert = '')"
+								:message="alert"
+								duration="1000"
+								position="middle"
+							/>
 						</div>
 					</ion-col>
 				</ion-row>

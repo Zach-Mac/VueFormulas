@@ -1,0 +1,9 @@
+<template>
+	<ion-page>
+		<ion-content>
+			<ion-grid>
+				<slot></slot>
+			</ion-grid>
+		</ion-content>
+	</ion-page>
+</template>
