@@ -1,5 +1,5 @@
 <script setup>
-const { solution, evalSolve } = useApi()
+// const { solution, evalSolve } = useApi()
 
 const expression = ref('')
 const output = ref('')

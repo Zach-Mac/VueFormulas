@@ -22,6 +22,10 @@ const props = defineProps({
 	varsNeeded: {
 		type: Number,
 		required: false
+	},
+	calcType: {
+		type: String,
+		default: 'Formula'
 	}
 })
 const alphabet = 'abcdefghijklmnopqrstuvwxyz'
@@ -51,30 +55,26 @@ const loading = ref(false)
 async function onCalculate() {
 	loading.value = true
 	const varsNotSetKeys = Object.keys(vmodels).filter(v => vmodels[v] == '')
-	console.log(
-		'varsNotSetKeys:',
-		varsNotSetKeys.length,
-		numVars.value,
-		varsNeeded.value
-	)
+	console.log('varsNotSetKeys:', varsNotSetKeys)
 	if (varsNotSetKeys.length == numVars.value - varsNeeded.value) {
 		alert.value = ''
-		const varNotSetKey = varsNotSetKeys[0]
 
 		const varsSet = Object.fromEntries(
 			Object.entries(vmodels).filter(([key, value]) => value != '')
 		)
 		console.log('varsSet:', toRaw(varsSet))
 
-		const [responseC, solutionC] = await evalSolve(
+		const [res, sol] = await evalSolve(
 			props.formula,
 			varsSet,
-			varNotSetKey
+			varsNotSetKeys
 		)
-		response.value = responseC
-		solution.value = solutionC
+		response.value = res
+		solution.value = sol
 
-		vmodels[varNotSetKey] = solution.value
+		for (const [key, value] of Object.entries(solution.value)) {
+			vmodels[key] = value
+		}
 
 		const vmodelsObject = toRaw(vmodels)
 		console.log('vmodelsObject', vmodelsObject)
@@ -84,7 +84,6 @@ async function onCalculate() {
 			props.logFormula ? props.logFormula : props.formula,
 			vmodelsObject
 		)
-
 		addFormulaToHistory(
 			props.name,
 			props.logFormula ? props.logFormula : props.formula,
@@ -92,10 +91,10 @@ async function onCalculate() {
 		)
 	} else if (varsNotSetKeys.length > numVars.value - varsNeeded.value) {
 		alert.value = 'Vars not set > vars needed'
-		console.log('vars not set > vars needed:', varsNotSetKeys)
+		console.log('vars not set > vars needed', 'varsNotSet:', varsNotSetKeys)
 	} else {
-		alert.value = 'All vars already set'
-		console.log('all vars set', varsNotSetKeys)
+		alert.value = 'Too many vars set'
+		console.log('all vars set')
 	}
 	loading.value = false
 }
@@ -113,9 +112,12 @@ if (slots.default) {
 </script>
 
 <template>
-	<ion-card :title="`Formula Calculator: ${name}`">
+	<!-- TODO: reset button -->
+	<ion-card :title="`${calcType} Calculator: ${name}`">
 		<ion-card-header>
-			<ion-card-title> Formula Calculator: {{ name }} </ion-card-title>
+			<ion-card-title>
+				{{ calcType }} Calculator: {{ name }}
+			</ion-card-title>
 		</ion-card-header>
 		<ion-card-content style="height: 80%">
 			<ion-text color="dark">

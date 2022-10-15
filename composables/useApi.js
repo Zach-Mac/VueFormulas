@@ -9,20 +9,17 @@ async function evalSolve(formula, vars, solveFor) {
 		})
 	)
 
-	const varsAssociation =
-		'<|' +
-		Object.entries(varsMapped)
-			.map(([key, value]) => `${key}->${value}`)
-			.join(', ') +
-		'|>'
+	const varsAssociation = JSONToWolframAssociations(varsMapped)
 	console.log('varsAssociation:', varsAssociation)
+
+	const solveForList = jsListToWolframList(solveFor)
 
 	const params = new URLSearchParams({
 		formula: formula,
 		vars: varsAssociation,
-		solveFor: solveFor
+		solveFor: solveForList
 	})
-	console.log('params', formula, varsAssociation, solveFor)
+	console.log('params', formula, varsAssociation, solveForList)
 
 	const urlCall = url + '?' + params
 	console.log('evalSolve call:', urlCall)
@@ -32,12 +29,37 @@ async function evalSolve(formula, vars, solveFor) {
 	const response = await fetchCall.text()
 	console.log('response', response)
 
-	const solution = response.slice(1, -1).split(',')[0]
-	console.log('solution', solution)
+	const solutions = wolframAssociationsToJSON(response.slice(1, -1))
+	console.log('solutions', solutions)
 
 	// const solution = response.match(/->\s*(.*)}/)[1]
 
-	return [response, solution]
+	return [response, solutions]
+}
+
+function jsListToWolframList(jsList) {
+	return '{' + jsList.join(', ') + '}'
+}
+
+function JSONToWolframAssociations(json) {
+	// ex. json = {HA: "12"}
+
+	const rules = Object.entries(json).map(([key, value]) => `${key}->${value}`)
+	console.log('rules', rules) // ex. ["HA->12"]
+
+	return '<|' + rules.join(', ') + '|>'
+}
+
+function wolframAssociationsToJSON(associations) {
+	// ex. associations = "{{HA -> 12.}}""
+
+	const rules = associations.slice(1, -1).split(',')
+	console.log('rules', rules) // ex. [{"HA -> 12"}]
+
+	const rulesMapped = rules.map(rule => rule.split('->').map(x => x.trim()))
+	console.log('rulesMapped', rulesMapped) // ex. [["HA", "12"]]
+
+	return Object.fromEntries(rulesMapped) // ex. {HA: "12"}
 }
 
 export default function () {

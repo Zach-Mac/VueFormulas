@@ -11,13 +11,13 @@ const showHistory = ref(true)
 
 			<QuickFormula />
 
-			<!-- <ConversionCalculator
+			<ConversionCalculator
 				name="pH"
 				formula="pH == 14-pOH && pH == -Log[10,cH] && pOH == -Log[10,cOH]"
 				:vars="['pH', 'pOH', 'cH', 'cOH']"
-			/> -->
+			/>
 
-			<ConversionCalculator
+			<!-- <ConversionCalculator
 				:vars="[
 					{
 						name: 'pH',
@@ -54,7 +54,7 @@ const showHistory = ref(true)
 						}
 					}
 				]"
-			/>
+			/> -->
 
 			<FormulaCalculator
 				name="Henderson-Hasselbach equation"
